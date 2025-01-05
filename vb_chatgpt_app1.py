@@ -47,8 +47,8 @@ Speak to a human
 
 """
 
-user_message = f"""\
-I want you to delete my profile and all of my user data"""
+# user_message = f"""\
+# I want you to delete my profile and all of my user data"""
 
 def get_completion_from_messages(messages, 
                                  model="gpt-3.5-turbo", 
@@ -85,13 +85,13 @@ if prompt:
     st.session_state.messages.append({"role": "user", "content":prompt})
     
     with st.chat_message("assistant"):
-        messages = [
-                {'role':'system', 'content': system_message},
-        ]
-        messages +=[
-                {'role':'user',
-                'content': f"{delimiter}{user_message}{delimiter}"}
-                for m in st.session_state.messages
+        user_message = f"""\
+        I want you to delete my profile and all of my user data"""
+        messages =  [
+            {'role':'system',
+            'content': system_message},
+            {'role':'user',
+            'content': f"{delimiter}{user_message}{delimiter}"},
         ]
         stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
