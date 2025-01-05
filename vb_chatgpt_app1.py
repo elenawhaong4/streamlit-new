@@ -9,6 +9,47 @@ st.title("Eunseo ChatGPT App")
 # with st.chat_message("assistant"):
 #     st.write("Hello human")
 
+delimiter = "####"
+system_message = f"""
+You will be provided with customer service queries. \
+The customer service query will be delimited with \
+{delimiter} characters.
+Classify each query into a primary category \
+and a secondary category.
+Provide your output in json format with the \
+keys: primary and secondary.
+
+Primary categories: Billing, Technical Support, \
+Account Management, or General Inquiry.
+
+Billing secondary categories:
+Unsubscribe or upgrade
+Add a payment method
+Explanation for charge
+Dispute a charge
+
+Technical Support secondary categories:
+General troubleshooting
+Device compatibility
+Software updates
+
+Account Management secondary categories:
+Password reset
+Update personal information
+Close account
+Account security
+
+General Inquiry secondary categories:
+Product information
+Pricing
+Feedback
+Speak to a human
+
+"""
+
+user_message = f"""\
+I want you to delete my profile and all of my user data"""
+
 def get_completion_from_messages(messages, 
                                  model="gpt-3.5-turbo", 
                                  temperature=0, 
@@ -35,6 +76,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
+
 prompt = st.chat_input("Say something")
 if prompt:
     with st.chat_message("user"):
@@ -44,13 +86,13 @@ if prompt:
     
     with st.chat_message("assistant"):
         messages = [
-                        {'role':'system', 
-                        'content':"""You are an assistant who responds in the style of Dr Seuss."""},
-                    ]
+                {'role':'system', 'content': system_message},
+        ]
         messages +=[
-                {"role": m["role"], "content": m["content"]}
+                {'role':'user',
+                'content': f"{delimiter}{user_message}{delimiter}"}
                 for m in st.session_state.messages
-            ]
+        ]
         stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=messages,
